@@ -4,6 +4,15 @@ description: Control the splash screen for your app.
 ---
 # Fork
 
+Install the fork:
+
+```bash
+# remove cordova-plugin-splashscreen
+cordova plugin rm cordova-plugin-splashscreen
+# install @fivethree/cordova-plugin-splashscreen
+cordova plugin add @fivethree/cordova-plugin-splashscreen
+```
+
 This fork adds following features for **Android**:
 
 `SplashStatusBarBackgroundColor` Set the splash screen status bar background color.
