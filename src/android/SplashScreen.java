@@ -27,11 +27,13 @@ import android.content.res.Configuration;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AlphaAnimation;
@@ -44,14 +46,17 @@ import android.widget.RelativeLayout;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.LOG;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 public class SplashScreen extends CordovaPlugin {
     private static final String LOG_TAG = "SplashScreen";
-    // Cordova 3.x.x has a copy of this plugin bundled with it (SplashScreenInternal.java).
+    // Cordova 3.x.x has a copy of this plugin bundled with it
+    // (SplashScreenInternal.java).
     // Enable functionality only if running on 4.x.x.
-    private static final boolean HAS_BUILT_IN_SPLASH_SCREEN = Integer.valueOf(CordovaWebView.CORDOVA_VERSION.split("\\.")[0]) < 4;
+    private static final boolean HAS_BUILT_IN_SPLASH_SCREEN = Integer
+            .valueOf(CordovaWebView.CORDOVA_VERSION.split("\\.")[0]) < 4;
     private static final int DEFAULT_SPLASHSCREEN_DURATION = 3000;
     private static final int DEFAULT_FADE_DURATION = 500;
     private static Dialog splashDialog;
@@ -72,9 +77,9 @@ public class SplashScreen extends CordovaPlugin {
     // Helper to be compile-time compatible with both Cordova 3.x and 4.x.
     private View getView() {
         try {
-            return (View)webView.getClass().getMethod("getView").invoke(webView);
+            return (View) webView.getClass().getMethod("getView").invoke(webView);
         } catch (Exception e) {
-            return (View)webView;
+            return (View) webView;
         }
     }
 
@@ -82,9 +87,11 @@ public class SplashScreen extends CordovaPlugin {
         int drawableId = 0;
         String splashResource = preferences.getString("SplashScreen", "screen");
         if (splashResource != null) {
-            drawableId = cordova.getActivity().getResources().getIdentifier(splashResource, "drawable", cordova.getActivity().getClass().getPackage().getName());
+            drawableId = cordova.getActivity().getResources().getIdentifier(splashResource, "drawable",
+                    cordova.getActivity().getClass().getPackage().getName());
             if (drawableId == 0) {
-                drawableId = cordova.getActivity().getResources().getIdentifier(splashResource, "drawable", cordova.getActivity().getPackageName());
+                drawableId = cordova.getActivity().getResources().getIdentifier(splashResource, "drawable",
+                        cordova.getActivity().getPackageName());
             }
         }
         return drawableId;
@@ -121,16 +128,18 @@ public class SplashScreen extends CordovaPlugin {
     /**
      * Shorter way to check value of "SplashMaintainAspectRatio" preference.
      */
-    private boolean isMaintainAspectRatio () {
+    private boolean isMaintainAspectRatio() {
         return preferences.getBoolean("SplashMaintainAspectRatio", false);
     }
 
-    private int getFadeDuration () {
-        int fadeSplashScreenDuration = preferences.getBoolean("FadeSplashScreen", true) ?
-            preferences.getInteger("FadeSplashScreenDuration", DEFAULT_FADE_DURATION) : 0;
+    private int getFadeDuration() {
+        int fadeSplashScreenDuration = preferences.getBoolean("FadeSplashScreen", true)
+                ? preferences.getInteger("FadeSplashScreenDuration", DEFAULT_FADE_DURATION)
+                : 0;
 
         if (fadeSplashScreenDuration < 30) {
-            // [CB-9750] This value used to be in decimal seconds, so we will assume that if someone specifies 10
+            // [CB-9750] This value used to be in decimal seconds, so we will assume that if
+            // someone specifies 10
             // they mean 10 seconds, and not the meaningless 10ms
             fadeSplashScreenDuration *= 1000;
         }
@@ -155,7 +164,7 @@ public class SplashScreen extends CordovaPlugin {
         // hide the splash screen to avoid leaking a window
         this.removeSplashScreen(true);
         // If we set this to true onDestroy, we lose track when we go from page to page!
-        //firstShow = true;
+        // firstShow = true;
     }
 
     @Override
@@ -219,9 +228,13 @@ public class SplashScreen extends CordovaPlugin {
     private void removeSplashScreen(final boolean forceHideImmediately) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-        if (splashDialog != null && splashImageView != null && splashDialog.isShowing()) {//check for non-null splashImageView, see https://issues.apache.org/jira/browse/CB-12277
+                if (splashDialog != null && splashImageView != null && splashDialog.isShowing()) {// check for non-null
+                                                                                                  // splashImageView,
+                                                                                                  // see
+                                                                                                  // https://issues.apache.org/jira/browse/CB-12277
                     final int fadeSplashScreenDuration = getFadeDuration();
-                    // CB-10692 If the plugin is being paused/destroyed, skip the fading and hide it immediately
+                    // CB-10692 If the plugin is being paused/destroyed, skip the fading and hide it
+                    // immediately
                     if (fadeSplashScreenDuration > 0 && forceHideImmediately == false) {
                         AlphaAnimation fadeOut = new AlphaAnimation(1, 0);
                         fadeOut.setInterpolator(new DecelerateInterpolator());
@@ -238,7 +251,12 @@ public class SplashScreen extends CordovaPlugin {
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
-                                if (splashDialog != null && splashImageView != null && splashDialog.isShowing()) {//check for non-null splashImageView, see https://issues.apache.org/jira/browse/CB-12277
+                                if (splashDialog != null && splashImageView != null && splashDialog.isShowing()) {// check
+                                                                                                                  // for
+                                                                                                                  // non-null
+                                                                                                                  // splashImageView,
+                                                                                                                  // see
+                                                                                                                  // https://issues.apache.org/jira/browse/CB-12277
                                     splashDialog.dismiss();
                                     splashDialog = null;
                                     splashImageView = null;
@@ -273,7 +291,8 @@ public class SplashScreen extends CordovaPlugin {
 
         lastHideAfterDelay = hideAfterDelay;
 
-        // Prevent to show the splash dialog if the activity is in the process of finishing
+        // Prevent to show the splash dialog if the activity is in the process of
+        // finishing
         if (cordova.getActivity().isFinishing()) {
             return;
         }
@@ -290,36 +309,83 @@ public class SplashScreen extends CordovaPlugin {
                 // Get reference to display
                 Display display = cordova.getActivity().getWindowManager().getDefaultDisplay();
                 Context context = webView.getContext();
+                Window splashWindow;
 
                 // Use an ImageView to render the image because of its flexible scaling options.
                 splashImageView = new ImageView(context);
                 splashImageView.setImageResource(drawableId);
-                LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT);
                 splashImageView.setLayoutParams(layoutParams);
 
                 splashImageView.setMinimumHeight(display.getHeight());
                 splashImageView.setMinimumWidth(display.getWidth());
 
-                // TODO: Use the background color of the webView's parent instead of using the preference.
+                // TODO: Use the background color of the webView's parent instead of using the
+                // preference.
                 splashImageView.setBackgroundColor(preferences.getInteger("backgroundColor", Color.BLACK));
 
                 if (isMaintainAspectRatio()) {
                     // CENTER_CROP scale mode is equivalent to CSS "background-size:cover"
                     splashImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                }
-                else {
+                } else {
                     // FIT_XY scales image non-uniformly to fit into image view.
                     splashImageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 }
 
                 // Create and show the dialog
                 splashDialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
+                splashWindow = splashDialog.getWindow();
+
+                // Read 'StatusBarStyle' from config.xml, default is 'default'.
+                setStatusBarStyle(splashWindow, preferences.getString("StatusBarStyle", "default"));
+
                 // check to see if the splash screen should be full screen
-                if ((cordova.getActivity().getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                        == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+                if ((cordova.getActivity().getWindow().getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
                     splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 }
+
+                // Inspirated in
+                // https://github.com/apache/cordova-plugin-splashscreen/pull/124/files
+                String statusBarColor = preferences.getString("SplashStatusBarBackgroundColor", "#000000");
+
+                if (statusBarColor != null && !statusBarColor.isEmpty() && Build.VERSION.SDK_INT >= 19) {
+
+                    splashWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    splashWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    try {
+                        // Using reflection makes sure any 5.0+ device will work without having to
+                        // compile with SDK level 21
+                        splashWindow.getClass().getDeclaredMethod("setStatusBarColor", int.class).invoke(splashWindow,
+                                Color.parseColor(statusBarColor));
+                    } catch (Exception ignore) {
+                        // this should not happen, only in case Android removes this method in a version
+                        // > 21
+                        LOG.w("SplashScreen StatusBarColor",
+                                "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
+                    }
+                }
+                String navigationBarColor = preferences.getString("SplashNavigationBarBackgroundColor", "#000000");
+
+                if (navigationBarColor != null && !navigationBarColor.isEmpty() && Build.VERSION.SDK_INT >= 19) {
+
+                    splashWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                    splashWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    try {
+                        // Using reflection makes sure any 5.0+ device will work without having to
+                        // compile with SDK level 21
+                        splashWindow.getClass().getDeclaredMethod("setNavigationBarColor", int.class)
+                                .invoke(splashWindow, Color.parseColor(navigationBarColor));
+                    } catch (Exception ignore) {
+                        // this should not happen, only in case Android removes this method in a version
+                        // > 21
+                        LOG.w("SplashScreen StatusBarColor",
+                                "Method window.setNavigationBarColor not found for SDK level " + Build.VERSION.SDK_INT);
+                    }
+                }
+
                 splashDialog.setContentView(splashImageView);
                 splashDialog.setCancelable(false);
                 splashDialog.show();
@@ -361,29 +427,26 @@ public class SplashScreen extends CordovaPlugin {
 
                 RelativeLayout centeredLayout = new RelativeLayout(cordova.getActivity());
                 centeredLayout.setGravity(Gravity.CENTER);
-                centeredLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                centeredLayout.setLayoutParams(
+                        new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
                 ProgressBar progressBar = new ProgressBar(webView.getContext());
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);
                 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                 progressBar.setLayoutParams(layoutParams);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     String colorName = preferences.getString("SplashScreenSpinnerColor", null);
-                    if(colorName != null){
-                        int[][] states = new int[][] {
-                            new int[] { android.R.attr.state_enabled}, // enabled
-                            new int[] {-android.R.attr.state_enabled}, // disabled
-                            new int[] {-android.R.attr.state_checked}, // unchecked
-                            new int[] { android.R.attr.state_pressed}  // pressed
+                    if (colorName != null) {
+                        int[][] states = new int[][] { new int[] { android.R.attr.state_enabled }, // enabled
+                                new int[] { -android.R.attr.state_enabled }, // disabled
+                                new int[] { -android.R.attr.state_checked }, // unchecked
+                                new int[] { android.R.attr.state_pressed } // pressed
                         };
                         int progressBarColor = Color.parseColor(colorName);
-                        int[] colors = new int[] {
-                            progressBarColor,
-                            progressBarColor,
-                            progressBarColor,
-                            progressBarColor
-                        };
+                        int[] colors = new int[] { progressBarColor, progressBarColor, progressBarColor,
+                                progressBarColor };
                         ColorStateList colorStateList = new ColorStateList(states, colors);
                         progressBar.setIndeterminateTintList(colorStateList);
                     }
@@ -409,5 +472,32 @@ public class SplashScreen extends CordovaPlugin {
                 }
             }
         });
+    }
+
+    private void setStatusBarStyle(Window splashWindow, final String style) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (style != null && !style.isEmpty()) {
+                View decorView = splashWindow.getDecorView();
+                int uiOptions = decorView.getSystemUiVisibility();
+
+                String[] darkContentStyles = { "default", };
+
+                String[] lightContentStyles = { "lightcontent", "blacktranslucent", "blackopaque", };
+
+                if (Arrays.asList(darkContentStyles).contains(style.toLowerCase())) {
+                    decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    return;
+                }
+
+                if (Arrays.asList(lightContentStyles).contains(style.toLowerCase())) {
+                    decorView.setSystemUiVisibility(uiOptions & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    return;
+                }
+
+                LOG.e("SplashScreen StatusBarStyle",
+                        "Invalid style, must be either 'default', 'lightcontent' or the deprecated 'blacktranslucent' and 'blackopaque'");
+
+            }
+        }
     }
 }
