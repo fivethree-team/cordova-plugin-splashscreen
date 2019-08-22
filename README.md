@@ -9,8 +9,8 @@ Install the fork:
 ```bash
 # remove cordova-plugin-splashscreen
 cordova plugin rm cordova-plugin-splashscreen
-# install @fivethree/cordova-plugin-splashscreen
-cordova plugin add @fivethree/cordova-plugin-splashscreen
+# install fork
+cordova plugin add https://github.com/fivethree-team/cordova-plugin-splashscreen.git
 ```
 
 This fork adds following features for **Android**:

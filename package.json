@@ -1,5 +1,5 @@
 {
-  "name": "@fivethree/cordova-plugin-splashscreen",
+  "name": "cordova-plugin-splashscreen",
   "version": "5.1.1",
   "description": "Cordova Splashscreen Plugin",
   "types": "./types/index.d.ts",
