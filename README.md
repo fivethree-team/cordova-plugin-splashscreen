@@ -4,7 +4,7 @@ description: Control the splash screen for your app.
 ---
 # Fork
 
-This fork adds following features:
+This fork adds following features for **Android**:
 
 `SplashStatusBarBackgroundColor` Set the splash screen status bar background color.
 
