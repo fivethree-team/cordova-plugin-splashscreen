@@ -339,7 +339,7 @@ public class SplashScreen extends CordovaPlugin {
                 splashWindow = splashDialog.getWindow();
 
                 // Read 'StatusBarStyle' from config.xml, default is 'default'.
-                setStatusBarStyle(splashWindow, preferences.getString("StatusBarStyle", "default"));
+                setStatusBarStyle(splashWindow, preferences.getString("SplashStatusBarStyle", "default"));
 
                 // check to see if the splash screen should be full screen
                 if ((cordova.getActivity().getWindow().getAttributes().flags

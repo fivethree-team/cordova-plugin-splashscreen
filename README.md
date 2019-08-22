@@ -2,6 +2,22 @@
 title: Splashscreen
 description: Control the splash screen for your app.
 ---
+# Fork
+
+This fork adds following features:
+
+`SplashStatusBarBackgroundColor` Set the splash screen status bar background color.
+
+        <preference name="SplashStatusBarBackgroundColor" value="#YOUR_COLOR" />
+
+`SplashNavigationBarBackgroundColor` Set the splash screen navigation bar background color.
+
+        <preference name="SplashNavigationBarBackgroundColor" value="#YOUR_COLOR" />
+
+`SplashStatusBarStyle` (status bar style, defaults to lightcontent). Set the splash screen status bar style. Available options default, lightcontent, blacktranslucent, blackopaque.
+
+        <preference name="SplashStatusBarStyle" value="default" />
+
 <!--
 # license: Licensed to the Apache Software Foundation (ASF) under one
 #         or more contributor license agreements.  See the NOTICE file
@@ -21,30 +37,42 @@ description: Control the splash screen for your app.
 #         under the License.
 -->
 
-|AppVeyor|Travis CI|
-|:-:|:-:|
-|[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-splashscreen?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-splashscreen)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-splashscreen.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-splashscreen)|
+|                                                                                                   AppVeyor                                                                                                   |                                                                        Travis CI                                                                        |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-splashscreen?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-splashscreen) | [![Build Status](https://travis-ci.org/apache/cordova-plugin-splashscreen.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-splashscreen) |
 
 # cordova-plugin-splashscreen
 
 This plugin displays and hides a splash screen while your web application is launching. Using its methods you can also show and hide the splash screen manually.
 
-- [Installation](#installation)
-- [Supported Platforms](#supported-platforms)
-- [Platform Splash Screen Image Configuration](#platform-splash-screen-image-configuration)
-  * [Example Configuration](#example-configuration)
-  * [iOS-specific Information](#ios-specific-information)
-  * [Windows-specific Information](#windows-specific-information)
-- [Preferences](#preferences)
-  * [config.xml](#configxml)
-  * [Quirks](#quirks)
-    + [Android Quirks](#android-quirks)
-    + [Browser Quirks](#browser-quirks)
-    + [iOS Quirks](#ios-quirks)
-    + [Windows Quirks](#windows-quirks)
-- [Methods](#methods)
-  * [splashscreen.hide](#splashscreenhide)
-  * [splashscreen.show](#splashscreenshow)
+- [Fork](#fork)
+- [cordova-plugin-splashscreen](#cordova-plugin-splashscreen)
+  - [Installation](#installation)
+  - [Supported Platforms](#supported-platforms)
+  - [Platform Splash Screen Image Configuration](#platform-splash-screen-image-configuration)
+    - [Example Configuration](#example-configuration)
+    - [iOS-specific Information](#ios-specific-information)
+      - [Legacy launch images](#legacy-launch-images)
+      - [Launch storyboard images](#launch-storyboard-images)
+        - [Designing launch storyboard images](#designing-launch-storyboard-images)
+        - [Scale](#scale)
+        - [Idioms](#idioms)
+        - [Size classes](#size-classes)
+        - [Single-image launch screen](#single-image-launch-screen)
+        - [Multi-image launch screen](#multi-image-launch-screen)
+        - [Quirks and Known Issues](#quirks-and-known-issues)
+    - [Windows-specific Information](#windows-specific-information)
+  - [Preferences](#preferences)
+    - [config.xml](#configxml)
+    - [Quirks](#quirks)
+      - [Android Quirks](#android-quirks)
+      - [Browser Quirks](#browser-quirks)
+      - [iOS Quirks](#ios-quirks)
+      - [Windows Quirks](#windows-quirks)
+  - [Methods](#methods)
+    - [splashscreen.hide](#splashscreenhide)
+      - [iOS Quirk](#ios-quirk)
+    - [splashscreen.show](#splashscreenshow)
 
 ## Installation
 
@@ -177,18 +205,18 @@ If you choose to use legacy launch images, you will use the following syntax in 
 
 Technically the filename for the `src` attribute can be anything you want; the filenames are used because they match what will be used when your project is compiled. The width and height attributes determine which launch images are displayed on which devices as follows:
 
-|    width    |    height    |    device (orientation)          |
-|:-----------:|:------------:|:--------------------------------:|
-|     320     |      480     | All non-retina iPhones and iPods |
-|     640     |      960     | iPhone 4/4s (portrait)           |
-|     640     |     1136     | iPhone 5/5s/SE (portrait)        |
-|     750     |     1334     | iPhone 6/6s/7 (portrait)         |
-|    1242     |     2208     | iPhone 6+/6s+/7+ (portrait)      |
-|    2208     |     1242     | iPhone 6+/6s+/7+ (landscape)     |
-|     768     |     1024     | All non-retina iPads (portrait)  |
-|    1024     |      768     | All non-retina iPads (landscape) |
-|    1536     |     2048     | All retina iPads (portrait)      |
-|    2048     |     1536     | All retina iPads (landscape)     |
+| width | height |       device (orientation)       |
+| :---: | :----: | :------------------------------: |
+|  320  |  480   | All non-retina iPhones and iPods |
+|  640  |  960   |      iPhone 4/4s (portrait)      |
+|  640  |  1136  |    iPhone 5/5s/SE (portrait)     |
+|  750  |  1334  |     iPhone 6/6s/7 (portrait)     |
+| 1242  |  2208  |   iPhone 6+/6s+/7+ (portrait)    |
+| 2208  |  1242  |   iPhone 6+/6s+/7+ (landscape)   |
+|  768  |  1024  | All non-retina iPads (portrait)  |
+| 1024  |  768   | All non-retina iPads (landscape) |
+| 1536  |  2048  |   All retina iPads (portrait)    |
+| 2048  |  1536  |   All retina iPads (landscape)   |
 
 Note: It is vitally important that the source image actually matches the size specified in the `width` and `height` attributes. If it does not, the device may fail to render it properly, if at all.
 
@@ -224,21 +252,21 @@ It is important to understand the concept of scale, idiom, and size class traits
 
 ##### Scale
 
-|    scale    |    devices             |
-|:-----------:|:----------------------:|
-|     1x      | All non-retina devices |
-|     2x      | Most retina devices    |
-|     3x      | iPhone 6+/6s+,7s+      |
+| scale |        devices         |
+| :---: | :--------------------: |
+|  1x   | All non-retina devices |
+|  2x   |  Most retina devices   |
+|  3x   |   iPhone 6+/6s+,7s+    |
 
 In general, you'll want to supply 2x and 3x images. Cordova only supports retina devices now, so there's no point in supplying 1x images.
 
 ##### Idioms
 
-|    idiom    |    devices    |
-|:-----------:|:-------------:|
-|    ipad     | All iPads     |
-|   iphone    | All iPhones and iPod Touches    |
-|  universal  | All devices   |
+|   idiom   |           devices            |
+| :-------: | :--------------------------: |
+|   ipad    |          All iPads           |
+|  iphone   | All iPhones and iPod Touches |
+| universal |         All devices          |
 
 You only need to provide universal images unless you need to fine-tune for a specific device idiom.
 
@@ -250,12 +278,12 @@ Note: this feature uses `com` as an abbreviation for "compact" classes.
 
 The following classes are supported by this feature:
 
-|    width    |    height    |    orientation    |
-|:-----------:|:------------:|:-----------------:|
-|     any     |     any      |        any        |
-|     com     |     any      |     portrait      |
-|     any     |     com      |  landscape (wide) |
-|     com     |     com      | landscape (narrow)|
+| width | height |    orientation     |
+| :---: | :----: | :----------------: |
+|  any  |  any   |        any         |
+|  com  |  any   |      portrait      |
+|  any  |  com   |  landscape (wide)  |
+|  com  |  com   | landscape (narrow) |
 
 To see the complete list of size classes associated with devices and viewports, see <http://www.sizeclasses.com>.
 
@@ -285,14 +313,14 @@ If a single launch image won't meet your needs, you will probably need to supply
 
 If you don't need to target images to a specific idiom, you should create six images, as follows:
 
-|    scale    |    idiom    |    width    |    height    |    size    |    filename    |
-|:-----------:|:-----------:|:-----------:|:------------:|:----------:|:--------------:|
-|     2x*     |  universal  |     any     |     any      | 2732x2732  | `Default@2x~universal~anyany.png` |
-|     2x      |  universal  |     com     |     any      | 1278x2732  | `Default@2x~universal~comany.png` |
-|     2x      |  universal  |     com     |     com      | 1334x750   | `Default@2x~universal~comcom.png` |
-|     3x*     |  universal  |     any     |     any      | 2208x2208  | `Default@3x~universal~anyany.png` |
-|     3x      |  universal  |     any     |     com      | 2208x1242  | `Default@3x~universal~anycom.png` |
-|     3x      |  universal  |     com     |     any      | 1242x2208  | `Default@3x~universal~comany.png` |
+| scale |   idiom   | width | height |   size    |             filename              |
+| :---: | :-------: | :---: | :----: | :-------: | :-------------------------------: |
+|  2x*  | universal |  any  |  any   | 2732x2732 | `Default@2x~universal~anyany.png` |
+|  2x   | universal |  com  |  any   | 1278x2732 | `Default@2x~universal~comany.png` |
+|  2x   | universal |  com  |  com   | 1334x750  | `Default@2x~universal~comcom.png` |
+|  3x*  | universal |  any  |  any   | 2208x2208 | `Default@3x~universal~anyany.png` |
+|  3x   | universal |  any  |  com   | 2208x1242 | `Default@3x~universal~anycom.png` |
+|  3x   | universal |  com  |  any   | 1242x2208 | `Default@3x~universal~comany.png` |
 
 \* this image is required in order for iOS utilize the other images within this scale and idiom.
 
@@ -311,16 +339,16 @@ The above looks like the following snippet when present in `config.xml`:
 
 Should one need to further fine tune based upon device idiom, one can do so. This might look like so:
 
-|    scale    |    idiom    |    width    |    height    |    size    |    filename    |
-|:-----------:|:-----------:|:-----------:|:------------:|:----------:|:--------------:|
-|     2x*     |    iphone   |     any     |     any      | 1334x1334  | `Default@2x~iphone~anyany.png` |
-|     2x      |    iphone   |     com     |     any      | 750x1334   | `Default@2x~iphone~comany.png` |
-|     2x      |    iphone   |     com     |     com      | 1334x750   | `Default@2x~iphone~comcom.png` |
-|     3x*     |    iphone   |     any     |     any      | 2208x2208  | `Default@3x~iphone~anyany.png` |
-|     3x      |    iphone   |     any     |     com      | 2208x1242  | `Default@3x~iphone~anycom.png` |
-|     3x      |    iphone   |     com     |     any      | 1242x2208  | `Default@3x~iphone~comany.png` |
-|     2x*     |     ipad    |     any     |     any      | 2732x2732  | `Default@2x~ipad~anyany.png`   |
-|     2x      |     ipad    |     com     |     any      | 1278x2732  | `Default@2x~ipad~comany.png`   |
+| scale | idiom  | width | height |   size    |            filename            |
+| :---: | :----: | :---: | :----: | :-------: | :----------------------------: |
+|  2x*  | iphone |  any  |  any   | 1334x1334 | `Default@2x~iphone~anyany.png` |
+|  2x   | iphone |  com  |  any   | 750x1334  | `Default@2x~iphone~comany.png` |
+|  2x   | iphone |  com  |  com   | 1334x750  | `Default@2x~iphone~comcom.png` |
+|  3x*  | iphone |  any  |  any   | 2208x2208 | `Default@3x~iphone~anyany.png` |
+|  3x   | iphone |  any  |  com   | 2208x1242 | `Default@3x~iphone~anycom.png` |
+|  3x   | iphone |  com  |  any   | 1242x2208 | `Default@3x~iphone~comany.png` |
+|  2x*  |  ipad  |  any  |  any   | 2732x2732 |  `Default@2x~ipad~anyany.png`  |
+|  2x   |  ipad  |  com  |  any   | 1278x2732 |  `Default@2x~ipad~comany.png`  |
 
 \* this image is required in order for iOS utilize the other images within this scale and idiom.
 
@@ -356,18 +384,18 @@ If you specify `src="res/windows/splashscreen.png"` the following files will be 
 
 The following are supported:
 
-|   Scale, %   |       Project       |    Width    |    Height    |             Filename              |
-|:------------:|:-------------------:|:-----------:|:------------:|:---------------------------------:|
-|     100      |  Windows 10/8.1     |     620     |     300      | `splashscreen.png` \| `splashscreen.scale-100.png`              |
-|     125      |  Windows 10         |     775     |     375      | `splashscreen.scale-125.png`      |
-|     150      |  Windows 10         |     930     |     450      | `splashscreen.scale-150.png`      |
-|     200      |  Windows 10         |     1240    |     600      | `splashscreen.scale-200.png`      |
-|     400      |  Windows 10         |     2480    |     1200     | `splashscreen.scale-400.png`      |
-|     140      |  Windows 8.1        |     868     |     420      | `splashscreen.scale-140.png`      |
-|     180      |  Windows 8.1        |     1116    |     540      | `splashscreen.scale-180.png`      |
-|     100      |  Windows Phone 8.1  |     480     |     800      | `splashscreenphone.png` \| `splashscreenphone.scale-100.png`         |
-|     140      |  Windows Phone 8.1  |     672     |     1120     | `splashscreenphone.scale-140.png` |
-|     240      |  Windows Phone 8.1  |     1152    |     1920     | `splashscreenphone.scale-240.png` |
+| Scale, % |      Project      | Width | Height |                           Filename                           |
+| :------: | :---------------: | :---: | :----: | :----------------------------------------------------------: |
+|   100    |  Windows 10/8.1   |  620  |  300   |      `splashscreen.png` \| `splashscreen.scale-100.png`      |
+|   125    |    Windows 10     |  775  |  375   |                 `splashscreen.scale-125.png`                 |
+|   150    |    Windows 10     |  930  |  450   |                 `splashscreen.scale-150.png`                 |
+|   200    |    Windows 10     | 1240  |  600   |                 `splashscreen.scale-200.png`                 |
+|   400    |    Windows 10     | 2480  |  1200  |                 `splashscreen.scale-400.png`                 |
+|   140    |    Windows 8.1    |  868  |  420   |                 `splashscreen.scale-140.png`                 |
+|   180    |    Windows 8.1    | 1116  |  540   |                 `splashscreen.scale-180.png`                 |
+|   100    | Windows Phone 8.1 |  480  |  800   | `splashscreenphone.png` \| `splashscreenphone.scale-100.png` |
+|   140    | Windows Phone 8.1 |  672  |  1120  |              `splashscreenphone.scale-140.png`               |
+|   240    | Windows Phone 8.1 | 1152  |  1920  |              `splashscreenphone.scale-240.png`               |
 
 __Note__: SplashScreens size for Windows 10 project should not exceed 200 KBytes.  
 __Note__: Supported formats are `.png`, `.jpg`, `.jpeg`. Mixing of the extensions within a target is not supported. I.e. you can have `splashscreen.jpg` and `splashscreenphone.png` but not `splashscreen.scale-100.png`, `splashscreen.scale-400.jpg`.  
